@@ -1,9 +1,13 @@
-import string, random
+import string, random, re, os
 from graph import Graph, Vertex
 
 def get_words_from_text(text_path):
     with open(text_path, "r") as f:
         text = f.read()
+
+        # remove [text in here] from songs lyrics
+        text = re.sub(r'(\[(.+)\])', ' ', text)
+
         text = ' '.join(text.split()) # turn whitespaces into just spaces
         text = text.lower() # make everything lowercase to compare stuff
         # remove all the punctuation to avoid silly scenarios like (Mr. Brightside)
@@ -44,9 +48,15 @@ def compose(g, words, length=50):
     
     return comp
 
-def main():
+def main(artist):
     # step 1: get words from text
-    words = get_words_from_text("texts/hp_sorcerer_stone.txt")
+    # words = get_words_from_text("texts/hp_sorcerer_stone.txt")
+    
+    # for song lyrics
+    words = []
+    for song_file in os.listdir(f"songs/{artist}"):
+        song_words = get_words_from_text(f"songs/{artist}/{song_file}")
+        words.extend(song_words)
 
     # step 2: make a graph using those words
     g = make_graph(words)
@@ -58,4 +68,4 @@ def main():
     return ' '.join(comp) # returns string where all the words are separated by a space
 
 if __name__ == "__main__":
-    print(main())
+    print(main("drake"))
